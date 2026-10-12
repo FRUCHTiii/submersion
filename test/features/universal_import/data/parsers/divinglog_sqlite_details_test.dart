@@ -57,6 +57,62 @@ void main() {
     expect(dive['notes'], 'Original note');
   });
 
+  for (final rating in [1, 5]) {
+    test('imports rating $rating without adding a note', () async {
+      final payload = await _parse([
+        "UPDATE Logbook SET Rating=$rating, Comments='Original note'",
+      ]);
+      final dive = payload.entitiesOf(ImportEntityType.dives).single;
+      expect(dive['rating'], rating);
+      expect(dive['notes'], 'Original note');
+    });
+  }
+
+  for (final rating in [null, 0]) {
+    test('leaves rating $rating unrated without adding a note', () async {
+      final payload = await _parse([
+        "UPDATE Logbook SET Rating=${rating ?? 'NULL'}, Comments='Original note'",
+      ]);
+      final dive = payload.entitiesOf(ImportEntityType.dives).single;
+      expect(dive['rating'], isNull);
+      expect(dive['notes'], 'Original note');
+    });
+  }
+
+  for (final rating in [-1, 9]) {
+    test(
+      'preserves unsupported rating $rating alongside original notes',
+      () async {
+        final payload = await _parse([
+          "UPDATE Logbook SET Rating=$rating, Comments='Original note'",
+        ]);
+        final dive = payload.entitiesOf(ImportEntityType.dives).single;
+        expect(dive['rating'], isNull);
+        expect(dive['notes'], 'Original note\n\nRating (Dive Log): $rating');
+      },
+    );
+  }
+
+  test('imports a textual visibility level', () async {
+    final payload = await _parse([
+      "UPDATE Logbook SET VisHor='Good', Comments='Original note'",
+    ]);
+    final dive = payload.entitiesOf(ImportEntityType.dives).single;
+    expect(dive['visibility'], 'good');
+    expect(dive['visibilityMeters'], isNull);
+    expect(dive['notes'], 'Original note');
+  });
+
+  test('imports altitude in metres without treating it as pressure', () async {
+    final payload = await _parse([
+      "UPDATE Logbook SET Altitude='500 m', Comments='Original note'",
+    ]);
+    final dive = payload.entitiesOf(ImportEntityType.dives).single;
+    expect(dive['altitude'], 500.0);
+    expect(dive['surfacePressure'], isNull);
+    expect(dive['notes'], 'Original note');
+  });
+
   test('imports jetty entry', () async {
     final payload = await _parse([
       "UPDATE Logbook SET Entry=5, Comments='Original note'",
@@ -127,6 +183,7 @@ void main() {
     expect(dive['surfacePressure'], isNull);
     expect(dive['surfaceInterval'], isNull);
     expect(dive['rating'], isNull);
+    expect(dive['notes'], contains('Rating (Dive Log): 9'));
     expect(dive['notes'], contains('ZHL-16C GF: 120/85'));
   });
 

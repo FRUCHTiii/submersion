@@ -24,7 +24,11 @@ abstract final class DivingLogDiveFields {
       notes.add('Water type (Dive Log): $waterCode');
     }
     final rating = DiveMateValues.rating(raw.rating);
-    if (rating != null) dive['rating'] = rating;
+    if (rating != null) {
+      dive['rating'] = rating;
+    } else if (raw.rating != null && raw.rating != 0) {
+      notes.add('Rating (Dive Log): ${raw.rating}');
+    }
     final entry = switch (raw.entryCode) {
       1 => 'shore',
       2 => 'boat',
