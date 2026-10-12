@@ -6,6 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:sqlite3/sqlite3.dart';
 import 'package:submersion/features/universal_import/data/models/import_enums.dart';
 import 'package:submersion/features/universal_import/data/models/import_payload.dart';
+import 'package:submersion/features/universal_import/data/models/import_warning.dart';
 import 'package:submersion/features/universal_import/data/parsers/divinglog_sqlite_parser.dart';
 
 Future<ImportPayload> _parse(List<String> statements) async {
@@ -207,17 +208,25 @@ void main() {
       "INSERT INTO Equipment VALUES (1, 'Example regulator', X'010203')",
       "INSERT INTO Equipment VALUES (2, 'Example fins', X'')",
     ]);
+    final notices = payload.warnings.where(
+      (w) => w.code == ImportWarningCode.logbookImagesNotImported,
+    );
+    // One notice for the file, counting only the non-empty blob.
+    expect(notices, hasLength(1));
+    expect(notices.single.count, 1);
+    expect(notices.single.message, contains('1 equipment photos'));
+  });
+
+  test('raises no picture notice when no blob is filled', () async {
+    final payload = await _parse([
+      'CREATE TABLE Equipment (ID INTEGER, Object TEXT, Photo BLOB)',
+      "INSERT INTO Equipment VALUES (1, 'Example fins', X'')",
+    ]);
     expect(
       payload.warnings.where(
-        (w) => w.message.contains('embedded equipment photos'),
+        (w) => w.code == ImportWarningCode.logbookImagesNotImported,
       ),
-      hasLength(1),
-    );
-    expect(
-      payload.warnings.any(
-        (w) => w.message.startsWith('1 embedded equipment photos'),
-      ),
-      isTrue,
+      isEmpty,
     );
   });
 
@@ -227,12 +236,11 @@ void main() {
       "INSERT INTO Trip VALUES (7, 'Undated trip')",
     ]);
     expect(payload.entitiesOf(ImportEntityType.trips), isEmpty);
-    expect(
-      payload.warnings.any(
-        (w) => w.message.contains('has no dates or dated dives'),
-      ),
-      isTrue,
+    final notice = payload.warnings.singleWhere(
+      (w) => w.code == ImportWarningCode.tripsNotImported,
     );
+    expect(notice.names, ['Undated trip']);
+    expect(notice.severity, ImportWarningSeverity.warning);
   });
 
   test('imports unused sites and German difficulty labels', () async {
@@ -277,6 +285,9 @@ void main() {
       gear.first['attributes'],
       contains(equals({'key': 'retailer', 'valueText': 'Example shop'})),
     );
+    // The service record carries the first item's next date; the second
+    // has no service record, so its notes are the only place it survives.
+    expect(gear.first['notes'], isNot(contains('Next service')));
     expect(gear.last['notes'], contains('Next service: 2025-06-01'));
     final records = payload.entitiesOf(ImportEntityType.serviceRecords);
     expect(records.single['serviceDate'], DateTime.utc(2024, 1, 1));

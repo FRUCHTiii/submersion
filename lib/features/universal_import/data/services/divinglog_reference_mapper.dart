@@ -41,6 +41,25 @@ class DivingLogReferenceMapper {
     return 'divinglog_site_${name.toLowerCase()}';
   }
 
+  /// Saved Diving Log places no dive refers to, each as a visit that
+  /// carries nothing but its place id.
+  ///
+  /// A saved place is keyed through [siteKeyFor] exactly as a dive there
+  /// would be, so the first dive the diver logs at it later folds onto the
+  /// same site. Keying the place on its own would repeat the id and text
+  /// fallbacks those helpers apply, and any drift between the two copies
+  /// would give that dive a second site. DiveMate files keep only the sites
+  /// their dives use.
+  static List<DivingLogRawDive> _unvisitedPlaces(DivingLogLogbook book) {
+    if (book.isDiveMate) return const [];
+    final visited = {for (final dive in book.dives) dive.placeId};
+    return [
+      for (final place in book.placesById.values)
+        if (!visited.contains(place.id))
+          DivingLogRawDive(id: 0, placeId: place.id),
+    ];
+  }
+
   /// Each component resolves through its id, falling back to the free text
   /// the dive row still carries.
   ///
@@ -87,17 +106,11 @@ class DivingLogReferenceMapper {
     return viaPlace ?? _placeOf(book, dive)?.country ?? dive.country;
   }
 
-  /// Sites keep the keys the dives reference, including saved Diving Log
-  /// places the diver has not visited yet. DiveMate keeps its dive-only sites.
+  /// Sites keep the keys the dives reference, plus the saved places no dive
+  /// has visited yet (see [_unvisitedPlaces]).
   static Map<String, Map<String, dynamic>> sites(DivingLogLogbook book) {
     final out = <String, Map<String, dynamic>>{};
-    final visited = {for (final dive in book.dives) dive.placeId};
-    for (final dive in [
-      ...book.dives,
-      for (final place in book.placesById.values)
-        if (!book.isDiveMate && !visited.contains(place.id))
-          DivingLogRawDive(id: 0, placeId: place.id),
-    ]) {
+    for (final dive in [...book.dives, ..._unvisitedPlaces(book)]) {
       final key = siteKeyFor(book, dive);
       if (key == null) continue;
       final place = dive.placeId == null ? null : book.placesById[dive.placeId];

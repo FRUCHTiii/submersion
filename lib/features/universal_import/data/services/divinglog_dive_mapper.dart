@@ -51,22 +51,26 @@ class DivingLogDiveMapper {
         warnings.add(
           ImportWarning(
             severity: ImportWarningSeverity.warning,
-            code: ImportWarningCode.diagnostic,
+            code: ImportWarningCode.tripsNotImported,
             message:
                 'Trip "${trip.name}" has no dates or dated dives and '
                 'could not be imported.',
+            entityType: ImportEntityType.trips,
+            names: [trip.name!],
           ),
         );
       }
     }
-    if (equipment.values.any((item) => item['purchasePrice'] != null)) {
+    final images = logbook.unsupportedImageCounts;
+    if (images.isNotEmpty) {
       warnings.add(
-        const ImportWarning(
-          severity: ImportWarningSeverity.info,
-          code: ImportWarningCode.diagnostic,
-          message:
-              'Equipment prices have no currency in this file. '
-              'Your default currency in Settings will be used.',
+        ImportWarning(
+          severity: ImportWarningSeverity.warning,
+          code: ImportWarningCode.logbookImagesNotImported,
+          message: [
+            for (final MapEntry(:key, :value) in images.entries) '$value $key',
+          ].join(', '),
+          count: images.values.fold(0, (sum, n) => sum + n),
         ),
       );
     }

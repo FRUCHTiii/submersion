@@ -11,6 +11,7 @@ import 'package:submersion/features/cylinder_passports/data/repositories/cylinde
 import 'package:submersion/features/cylinder_passports/data/repositories/cylinder_passport_repository.dart';
 import 'package:submersion/features/cylinder_passports/data/services/csv_fill_importer.dart';
 import 'package:submersion/features/dive_import/data/repositories/imported_file_repository.dart';
+import 'package:submersion/features/dive_import/data/services/imported_image.dart';
 import 'package:submersion/features/dive_import/data/services/additional_computer_writer.dart';
 import 'package:submersion/features/dive_import/data/services/currency_restorer.dart';
 import 'package:submersion/features/dive_import/data/services/import_map_readers.dart';
@@ -27,6 +28,7 @@ import 'package:submersion/features/equipment/data/services/equipment_set_for_co
 import 'package:submersion/features/equipment/data/services/dive_equipment_defaulter.dart';
 import 'package:submersion/features/equipment/domain/entities/equipment_observation.dart';
 import 'package:submersion/features/pre_dive/data/services/checklist_dive_linker.dart';
+import 'package:submersion/core/services/images/profile_photo_codec.dart';
 import 'package:submersion/core/services/location_service.dart';
 import 'package:submersion/core/services/logger_service.dart';
 import 'package:submersion/core/utils/geo_math.dart';
@@ -1140,7 +1142,7 @@ class UddfEntityImporter {
         name: name,
         email: buddyData['email'] as String?,
         phone: buddyData['phone'] as String?,
-        photo: buddyData['photo'] as Uint8List?,
+        photo: await importedImage(buddyData['photo'], ImageEncodeSpec.avatar),
         notes: buddyData['notes'] as String? ?? '',
         createdAt: now,
         updatedAt: now,
@@ -1285,8 +1287,14 @@ class UddfEntityImporter {
         expiryDate: certData['expiryDate'] as DateTime?,
         instructorName: certData['instructorName'] as String?,
         instructorNumber: certData['instructorNumber'] as String?,
-        photoFront: certData['photoFront'] as Uint8List?,
-        photoBack: certData['photoBack'] as Uint8List?,
+        photoFront: await importedImage(
+          certData['photoFront'],
+          ImageEncodeSpec.certificationCard,
+        ),
+        photoBack: await importedImage(
+          certData['photoBack'],
+          ImageEncodeSpec.certificationCard,
+        ),
         notes: certData['notes'] as String? ?? '',
         createdAt: now,
         updatedAt: now,

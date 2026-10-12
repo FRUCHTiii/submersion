@@ -270,7 +270,8 @@ class DivingLogDbReader {
           caps,
           isDiveMate: isDiveMate,
         );
-        notes.addAll(DivingLogReferenceReader.unsupportedImageNotes(db, caps));
+        final unsupportedImages =
+            DivingLogReferenceReader.unsupportedImageCounts(db, caps);
 
         final selectList = caps.selectList('Logbook', [
           ..._logbookColumns,
@@ -379,6 +380,7 @@ class DivingLogDbReader {
           dives: dives,
           capabilities: caps,
           schemaNotes: notes,
+          unsupportedImageCounts: unsupportedImages,
           buddiesById: references.buddies,
           placesById: references.places,
           cityNamesById: references.cityNames,

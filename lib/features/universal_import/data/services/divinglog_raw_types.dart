@@ -274,6 +274,10 @@ class DivingLogLogbook {
   /// recorded once per import as diagnostics rather than shown per dive.
   final List<String> schemaNotes;
 
+  /// Pictures the file stores on records Submersion keeps no picture for
+  /// (gear, marine life, site maps, trips, dive centers), by kind.
+  final Map<String, int> unsupportedImageCounts;
+
   final Map<int, DivingLogRawBuddy> buddiesById;
   final Map<int, DivingLogRawPlace> placesById;
   final Map<int, String> cityNamesById;
@@ -301,6 +305,7 @@ class DivingLogLogbook {
     required this.dives,
     required this.capabilities,
     this.schemaNotes = const [],
+    this.unsupportedImageCounts = const {},
     this.buddiesById = const {},
     this.placesById = const {},
     this.cityNamesById = const {},

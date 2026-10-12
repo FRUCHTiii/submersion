@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image/image.dart' as img;
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:submersion/core/constants/enums.dart';
@@ -938,25 +939,35 @@ void main() {
   });
 
   group('Import buddies', () {
-    test('passes embedded photos to the buddy repository', () async {
+    test('stores an embedded photo as a bounded avatar', () async {
       when(mockBuddyRepo.createBuddy(any)).thenAnswer(
         (invocation) async => invocation.positionalArguments[0] as Buddy,
       );
-      final photo = Uint8List.fromList([1, 2, 3]);
       await importer.import(
         data: UddfImportResult(
           buddies: [
-            {'name': 'Example buddy', 'photo': photo},
+            {'name': 'Example buddy', 'photo': _png(1200, 800)},
+            {
+              'name': 'Unreadable buddy',
+              'photo': Uint8List.fromList([1, 2]),
+            },
           ],
         ),
-        selections: const UddfImportSelections(buddies: {0}),
+        selections: const UddfImportSelections(buddies: {0, 1}),
         repositories: repos,
         diverId: diverId,
       );
-      final saved =
-          verify(mockBuddyRepo.createBuddy(captureAny)).captured.single
-              as Buddy;
-      expect(saved.photo, photo);
+      final saved = verify(
+        mockBuddyRepo.createBuddy(captureAny),
+      ).captured.cast<Buddy>();
+      // Re-encoded the way a picked avatar is: a square JPEG of at most
+      // 512 px, never the source bytes.
+      final avatar = img.decodeJpg(saved.first.photo!)!;
+      expect((avatar.width, avatar.height), (512, 512));
+      // Bytes nothing can decode leave the buddy without a photo rather
+      // than storing one that never renders.
+      expect(saved.last.photo, isNull);
+      expect(saved.last.name, 'Unreadable buddy');
     });
 
     test('imports selected buddies', () async {
@@ -1015,12 +1026,12 @@ void main() {
   });
 
   group('Import certifications', () {
-    test('persists card scans and instructor number', () async {
+    test('persists bounded card scans and instructor number', () async {
       when(mockCertificationRepo.createCertification(any)).thenAnswer(
         (invocation) async =>
             invocation.positionalArguments[0] as Certification,
       );
-      final front = Uint8List.fromList([1, 2, 3]);
+      final front = _png(3000, 1875);
       final back = Uint8List.fromList([4, 5, 6]);
       await importer.import(
         data: UddfImportResult(
@@ -1042,8 +1053,10 @@ void main() {
                 mockCertificationRepo.createCertification(captureAny),
               ).captured.single
               as Certification;
-      expect(saved.photoFront, front);
-      expect(saved.photoBack, back);
+      // Card faces keep their aspect ratio within a 2000 px edge.
+      final card = img.decodeJpg(saved.photoFront!)!;
+      expect((card.width, card.height), (2000, 1250));
+      expect(saved.photoBack, isNull);
       expect(saved.instructorNumber, 'TEST-123');
     });
 
@@ -4865,3 +4878,8 @@ class _NoCustomCertifications extends CustomCertificationRepository {
     updatedAt: DateTime(2026),
   );
 }
+
+/// A solid PNG of the given size, standing in for an image embedded in a
+/// source logbook.
+Uint8List _png(int width, int height) =>
+    img.encodePng(img.Image(width: width, height: height));

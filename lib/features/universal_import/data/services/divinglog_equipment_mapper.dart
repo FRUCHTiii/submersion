@@ -90,7 +90,10 @@ class DivingLogEquipmentMapper {
         map['isActive'] = false;
       }
       final notes = [
-        if (item.nextServiceDate != null)
+        // With a last service date, the service record from
+        // [serviceRecords] carries the next one in its own field. Without
+        // one there is no record, and the notes are all that keep it.
+        if (item.nextServiceDate != null && item.lastServiceDate == null)
           'Next service: '
               '${item.nextServiceDate!.toIso8601String().substring(0, 10)}',
         if (item.o2ServiceDate != null)

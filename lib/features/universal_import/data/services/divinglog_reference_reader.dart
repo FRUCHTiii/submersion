@@ -402,13 +402,14 @@ class DivingLogReferenceReader {
     );
   }
 
-  /// These entity images have no path through the file-import media step.
-  /// Count them without loading their blobs, so an omission is explicit.
-  static List<String> unsupportedImageNotes(
+  /// Pictures stored in tables whose records Submersion has no picture
+  /// field for, counted per kind without loading their blobs so the import
+  /// can say what it left behind. Kinds with none are absent.
+  static Map<String, int> unsupportedImageCounts(
     Database db,
     DivingLogCapabilities caps,
   ) {
-    final notes = <String>[];
+    final counts = <String, int>{};
     for (final (table, column, label) in const [
       ('Equipment', 'Photo', 'equipment photos'),
       ('Fish', 'Photo', 'marine-life photos'),
@@ -427,14 +428,9 @@ class DivingLogReferenceReader {
                   )
                   .single['n']
               as int;
-      if (count > 0) {
-        notes.add(
-          '$count embedded $label could not be imported. '
-          'Keep the source logbook to retain these images.',
-        );
-      }
+      if (count > 0) counts[label] = count;
     }
-    return notes;
+    return counts;
   }
 
   /// DiveMate's set marker: the `---SET` category, or type 9. A set lists
