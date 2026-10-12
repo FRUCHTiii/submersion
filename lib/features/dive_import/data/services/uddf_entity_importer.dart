@@ -360,6 +360,7 @@ class UddfEntityImporter {
   final TankPresetEntity? _defaultTankPreset;
   final double _defaultStartPressure;
   final bool _applyDefaultTankToImports;
+  final String _defaultPurchaseCurrency;
 
   /// ISO 639-1 code for reverse-geocoded country/region (issue #1187).
   final String _placeNameLanguage;
@@ -378,6 +379,7 @@ class UddfEntityImporter {
     TankPresetEntity? defaultTankPreset,
     double defaultStartPressure = 200.0,
     bool applyDefaultTankToImports = false,
+    String defaultPurchaseCurrency = 'USD',
     String placeNameLanguage = LocationService.defaultLanguageCode,
     ImportedFileRepository? importedFiles,
     CustomCertificationRepository? customCertifications,
@@ -388,6 +390,7 @@ class UddfEntityImporter {
        _shareCustomAgenciesByDefault = shareCustomAgenciesByDefault,
        _defaultStartPressure = defaultStartPressure,
        _applyDefaultTankToImports = applyDefaultTankToImports,
+       _defaultPurchaseCurrency = defaultPurchaseCurrency,
        _placeNameLanguage = placeNameLanguage,
        _importedFiles = importedFiles ?? ImportedFileRepository();
 
@@ -978,7 +981,9 @@ class UddfEntityImporter {
         status: equipStatus,
         purchaseDate: equipData['purchaseDate'] as DateTime?,
         purchasePrice: equipData['purchasePrice'] as double?,
-        purchaseCurrency: equipData['purchaseCurrency'] as String? ?? 'USD',
+        purchaseCurrency:
+            equipData['purchaseCurrency'] as String? ??
+            _defaultPurchaseCurrency,
         lastServiceDate: equipData['lastServiceDate'] as DateTime?,
         serviceIntervalDays: equipData['serviceIntervalDays'] as int?,
         notes: equipData['notes'] as String? ?? '',
@@ -1135,6 +1140,7 @@ class UddfEntityImporter {
         name: name,
         email: buddyData['email'] as String?,
         phone: buddyData['phone'] as String?,
+        photo: buddyData['photo'] as Uint8List?,
         notes: buddyData['notes'] as String? ?? '',
         createdAt: now,
         updatedAt: now,
@@ -1279,6 +1285,8 @@ class UddfEntityImporter {
         expiryDate: certData['expiryDate'] as DateTime?,
         instructorName: certData['instructorName'] as String?,
         instructorNumber: certData['instructorNumber'] as String?,
+        photoFront: certData['photoFront'] as Uint8List?,
+        photoBack: certData['photoBack'] as Uint8List?,
         notes: certData['notes'] as String? ?? '',
         createdAt: now,
         updatedAt: now,
