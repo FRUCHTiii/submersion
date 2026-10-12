@@ -4146,10 +4146,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get certifications_list_tooltip_walletView => 'Portemonneeweergave';
 
   @override
-  String get certifications_picker_clearTooltip =>
-      'Certificeringselectie wissen';
-
-  @override
   String get certifications_picker_empty_addButton => 'Certificering toevoegen';
 
   @override
@@ -4171,11 +4167,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get certifications_picker_newCert => 'Nieuw cert.';
 
   @override
-  String get certifications_picker_noSelection =>
-      'Geen certificering geselecteerd';
-
-  @override
-  String get certifications_picker_sheetTitle => 'Koppelen aan certificering';
+  String get certifications_picker_selectTitle => 'Selecteer certificeringen';
 
   @override
   String get certifications_search_empty_hint =>
@@ -5168,10 +5160,6 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get courses_detail_certificationNotFound =>
-      'Certificering niet gevonden';
-
-  @override
   String get courses_detail_noTrainingDives =>
       'Nog geen trainingsduiken gekoppeld';
 
@@ -5237,8 +5225,8 @@ class AppLocalizationsNl extends AppLocalizations {
   String get courses_field_instructorNumber => 'Instructeurnummer';
 
   @override
-  String get courses_field_linkCertificationHint =>
-      'Koppel een certificering verdiend bij deze cursus';
+  String get courses_field_linkCertificationsHint =>
+      'Koppel de certificeringen verdiend bij deze cursus';
 
   @override
   String get courses_field_location => 'Locatie';
@@ -5287,9 +5275,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get courses_picker_active => 'Actief';
 
   @override
-  String get courses_picker_clearSelection => 'Selectie wissen';
-
-  @override
   String get courses_picker_createCourse => 'Cursus aanmaken';
 
   @override
@@ -5304,10 +5289,13 @@ class AppLocalizationsNl extends AppLocalizations {
   String get courses_picker_noCourses => 'Nog geen cursussen';
 
   @override
-  String get courses_picker_noneSelected => 'Geen cursus geselecteerd';
+  String get courses_picker_selectCoursesTitle =>
+      'Selecteer trainingscursussen';
 
   @override
-  String get courses_picker_selectTitle => 'Selecteer trainingscursus';
+  String courses_picker_linkedTo(String courseName) {
+    return 'Gekoppeld aan: $courseName';
+  }
 
   @override
   String get courses_picker_selected => 'geselecteerd';
@@ -5349,7 +5337,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get courses_section_details => 'Cursusdetails';
 
   @override
-  String get courses_section_earnedCertification => 'Behaalde certificering';
+  String get courses_section_earnedCertifications => 'Behaalde certificeringen';
 
   @override
   String get courses_section_instructor => 'Instructeur';
@@ -5586,6 +5574,11 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String dashboard_gauges_lastDiveDays(int days) {
     return 'Laatste duik ${days}d geleden';
+  }
+
+  @override
+  String dashboard_gauges_lastDiveSpan(String span) {
+    return 'Laatste duik $span geleden';
   }
 
   @override
@@ -7542,9 +7535,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_edit_row_addSite => 'Duikstek toevoegen';
 
   @override
-  String get diveLog_edit_row_course => 'Cursus';
-
-  @override
   String get diveLog_edit_row_diveCenter => 'Duikcentrum';
 
   @override
@@ -7650,7 +7640,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_edit_section_tags => 'Tags';
 
   @override
-  String get diveLog_edit_section_trainingCourse => 'Trainingscursus';
+  String get diveLog_edit_section_trainingCourses => 'Trainingscursussen';
 
   @override
   String get diveLog_edit_section_trip => 'Reis';
@@ -7768,8 +7758,8 @@ class AppLocalizationsNl extends AppLocalizations {
   String get diveLog_edit_tooltip_removeWeight => 'Verwijderen';
 
   @override
-  String get diveLog_edit_trainingCourseHint =>
-      'Koppel deze duik aan een trainingscursus';
+  String get diveLog_edit_trainingCoursesHint =>
+      'Koppel deze duik aan een of meer trainingscursussen';
 
   @override
   String diveLog_edit_tripSuggested(Object name) {
@@ -10255,11 +10245,11 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String get divePlanner_field_bailoutGas => 'Bailout-gas';
+  String get divePlanner_field_diluentGas => 'Diluent';
 
   @override
-  String get divePlanner_field_bailoutGasHint =>
-      'Open-circuit gas meegenomen bij falen van het circuit';
+  String get divePlanner_field_diluentGasHint =>
+      'Niet-aangevinkte flessen zijn bailout';
 
   @override
   String get divePlanner_field_hePercent => 'He %';
@@ -10362,6 +10352,10 @@ class AppLocalizationsNl extends AppLocalizations {
       'Tijd voor probleemoplossing';
 
   @override
+  String get divePlanner_gasOptions_gasSwitchStopSeconds =>
+      'Stop bij gaswissel';
+
+  @override
   String get divePlanner_gasOptions_ppO2Bottom => 'Bodem-ppO₂';
 
   @override
@@ -10376,6 +10370,15 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get divePlanner_label_tanks => 'Flessen';
+
+  @override
+  String get divePlanner_label_loopGases => 'Loop';
+
+  @override
+  String get divePlanner_label_bailoutGases => 'Bailout';
+
+  @override
+  String get divePlanner_label_noBailout => 'Nog geen bailout-fles';
 
   @override
   String get divePlanner_savedTanks_title => 'Opgeslagen flessen';
@@ -13452,11 +13455,69 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String passport_scan_filledFromUsed(String name, int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Ingevuld vanuit $name. Gebruikt bij $count eerdere duiken.',
+      one: 'Ingevuld vanuit $name. Gebruikt bij $count eerdere duik.',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get passport_foreign_title => 'Flessentag';
 
   @override
   String get passport_foreign_notInGear =>
       'Deze fles hoort niet bij je uitrusting.';
+
+  @override
+  String passport_usage_foreignTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Je hebt deze fles $count keer gebruikt',
+      one: 'Je hebt deze fles $count keer gebruikt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get passport_usage_title => 'Duiken';
+
+  @override
+  String passport_usage_ownTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Gebruikt bij $count duiken',
+      one: 'Gebruikt bij $count duik',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String passport_usage_lastUsed(String date) {
+    return 'Laatst gebruikt op $date';
+  }
+
+  @override
+  String get passport_usage_noSite => 'Geen duikstek';
+
+  @override
+  String passport_usage_diveNumber(int number) {
+    return 'Duik $number';
+  }
+
+  @override
+  String passport_usage_showAll(int count) {
+    return 'Alle $count tonen';
+  }
+
+  @override
+  String get passport_usage_loadFailed =>
+      'Je duiken met deze fles konden niet worden geladen';
 
   @override
   String passport_foreign_writtenOn(String date) {
@@ -13855,11 +13916,6 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
-  String pdf_minutesShort(String minutes) {
-    return '${minutes}m';
-  }
-
-  @override
   String pdf_minutes(String minutes) {
     return '$minutes min';
   }
@@ -14140,8 +14196,8 @@ class AppLocalizationsNl extends AppLocalizations {
   String get pdf_pressureEnd => 'Eind';
 
   @override
-  String pdf_surfaceIntervalShort(String minutes) {
-    return 'OI: ${minutes}min';
+  String pdf_surfaceIntervalSpan(String interval) {
+    return 'OI: $interval';
   }
 
   @override
@@ -15138,6 +15194,14 @@ class AppLocalizationsNl extends AppLocalizations {
       'Voeg je duikuitrusting toe om gebruik en service bij te houden';
 
   @override
+  String get equipment_list_emptyState_defaultView_subtitle =>
+      'Je standaardweergave verbergt de rest van je uitrusting.';
+
+  @override
+  String get equipment_list_emptyState_defaultView_title =>
+      'Geen uitrusting in je standaardweergave';
+
+  @override
   String get equipment_list_emptyState_filterText_equipment => 'uitrusting';
 
   @override
@@ -15184,6 +15248,9 @@ class AppLocalizationsNl extends AppLocalizations {
       'Geen uitrusting in deze categorie';
 
   @override
+  String get equipment_list_emptyState_showAll => 'Alle uitrusting tonen';
+
+  @override
   String get equipment_list_emptyState_serviceDueUpToDate =>
       'Al je uitrusting is up-to-date met service!';
 
@@ -15204,7 +15271,7 @@ class AppLocalizationsNl extends AppLocalizations {
   String get equipment_list_filterAll => 'Alle uitrusting';
 
   @override
-  String get equipment_list_filterCurrent => 'Huidige uitrusting';
+  String get equipment_list_filterCurrent => 'Standaardweergave';
 
   @override
   String get equipment_list_filterServiceDue => 'Service nodig';
@@ -15243,6 +15310,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get equipment_filter_section_status => 'Status';
+
+  @override
+  String get equipment_filter_editDefault => 'Standaard bewerken';
 
   @override
   String get equipment_filter_section_tags => 'Tags';
@@ -19141,6 +19211,9 @@ class AppLocalizationsNl extends AppLocalizations {
       'Bailoutgas onvoldoende voor het slechtste geval';
 
   @override
+  String get plannerCanvas_bailout_schedule => 'Plan vanaf het ergste geval';
+
+  @override
   String plannerCanvas_bailout_required(String liters) {
     return 'Nodig $liters';
   }
@@ -19329,9 +19402,6 @@ class AppLocalizationsNl extends AppLocalizations {
   String get plannerCanvas_tab_setup => 'Instellingen';
 
   @override
-  String get plannerCanvas_o2Narcotic => 'O₂ als narcotisch behandelen';
-
-  @override
   String get plannerCanvas_rates_ascent => 'Stijgsnelheid';
 
   @override
@@ -19396,6 +19466,17 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String get plannerCanvas_chartMode_bailout => 'Bailout';
+
+  @override
+  String get plannerCanvas_chartMode_ccr => 'CCR';
+
+  @override
+  String plannerCanvas_scrub_tts(String minutes) {
+    return 'TTS $minutes′';
+  }
+
+  @override
   String plannerCanvas_scrub_readout(String minutes, String depth) {
     return 'RT $minutes′ · $depth';
   }
@@ -19437,6 +19518,12 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get plannerCanvas_table_duration => 'Duur';
+
+  @override
+  String get plannerCanvas_table_ppO2 => 'PO2';
+
+  @override
+  String get plannerCanvas_table_end => 'END';
 
   @override
   String get plannerCanvas_turnRule_allUsable => 'Alles bruikbaar';
@@ -22084,6 +22171,10 @@ class AppLocalizationsNl extends AppLocalizations {
   String get settings_conflict_field_equipmentComponents_role => 'Rol';
 
   @override
+  String get settings_conflict_field_equipmentDefaultStatuses =>
+      'Standaardweergave van de uitrusting';
+
+  @override
   String get settings_conflict_field_equipmentFindings_severity => 'Ernst';
 
   @override
@@ -22979,6 +23070,10 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get settings_conflict_field_species_category => 'Categorie';
+
+  @override
+  String get settings_conflict_field_splitAtConfiguredRate =>
+      'Splitsen bij de geconfigureerde snelheid';
 
   @override
   String get settings_conflict_field_startDateTime => 'Geplande start';
@@ -24674,6 +24769,17 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get settings_manage_locations_subtitle =>
       'Waar je uitrusting ligt, in onderhoud is of is uitgeleend';
+
+  @override
+  String get settings_equipmentDefaultView_intro =>
+      'Zonder filter toont de uitrustingslijst uitrusting met deze statussen.';
+
+  @override
+  String get settings_equipmentDefaultView_listSeparator => ', ';
+
+  @override
+  String get settings_equipmentDefaultView_title =>
+      'Standaardweergave van de uitrusting';
 
   @override
   String get settings_manage_currencyRules => 'Geldigheid certificeringen';
@@ -27507,6 +27613,11 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String insights_observations_diveGapSpan(String span) {
+    return 'Uw laatste duik was $span geleden';
+  }
+
+  @override
   String insights_observations_favouriteSite(
     String site,
     String dives,
@@ -27754,19 +27865,6 @@ class AppLocalizationsNl extends AppLocalizations {
   @override
   String get insights_timePatterns_surfaceInterval_error =>
       'Kan oppervlakte-intervalgegevens niet laden';
-
-  @override
-  String insights_timePatterns_surfaceInterval_formatHoursMinutes(
-    Object hours,
-    Object minutes,
-  ) {
-    return '${hours}u ${minutes}m';
-  }
-
-  @override
-  String insights_timePatterns_surfaceInterval_formatMinutes(Object minutes) {
-    return '$minutes min';
-  }
 
   @override
   String get insights_timePatterns_surfaceInterval_maximum => 'Maximum';
@@ -29853,6 +29951,9 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get trips_photos_viewAll => 'Alles bekijken';
+
+  @override
+  String get trips_picker_alreadyPacked => 'Al ingepakt';
 
   @override
   String get trips_picker_clearTooltip => 'Selectie wissen';
@@ -32344,6 +32445,14 @@ class AppLocalizationsNl extends AppLocalizations {
 
   @override
   String get divePlanner_segmentEditor_duration => 'Duur (min)';
+
+  @override
+  String get divePlanner_segmentEditor_splitAtRate =>
+      'Geconfigureerde snelheid gebruiken';
+
+  @override
+  String get divePlanner_segmentEditor_splitAtRateHint =>
+      'Reizen met de geconfigureerde snelheid, de rest van de duur als hangtijd';
 
   @override
   String get divePlanner_segmentEditor_editTitle => 'Segment bewerken';
@@ -44382,6 +44491,36 @@ class AppLocalizationsNl extends AppLocalizations {
   }
 
   @override
+  String common_elapsed_minutes(int minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String common_elapsed_hoursMinutes(int hours, int minutes) {
+    return '${hours}u ${minutes}m';
+  }
+
+  @override
+  String common_elapsed_daysHours(int days, int hours) {
+    return '${days}d ${hours}u';
+  }
+
+  @override
+  String common_elapsed_yearsDays(int years, int days) {
+    return '${years}j ${days}d';
+  }
+
+  @override
+  String common_elapsed_daysHoursMinutes(int days, int hours, int minutes) {
+    return '${days}d ${hours}u ${minutes}m';
+  }
+
+  @override
+  String common_elapsed_yearsDaysHours(int years, int days, int hours) {
+    return '${years}j ${days}d ${hours}u';
+  }
+
+  @override
   String common_relativeTime_inHours(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -46245,6 +46384,15 @@ class AppLocalizationsNl extends AppLocalizations {
     Object endDate,
   ) {
     return '$name, $startDate tot $endDate, geselecteerd';
+  }
+
+  @override
+  String trips_picker_tileSemanticsPacked(
+    Object name,
+    Object startDate,
+    Object endDate,
+  ) {
+    return '$name, $startDate tot $endDate, al ingepakt';
   }
 
   @override
